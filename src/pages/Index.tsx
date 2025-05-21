@@ -1,13 +1,23 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { ScrollArea } from "@/components/ui/scroll-area";
+import RouteCalculator from "@/components/RouteCalculator";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <ScrollArea className="h-screen">
+      <div className="container py-6 md:py-10">
+        <header className="mb-8 text-center">
+          <h1 className="text-2xl md:text-3xl font-bold mb-2">Route Cost Calculator</h1>
+          <p className="text-muted-foreground">Compare toll vs. toll-free routes to save money</p>
+        </header>
+        
+        <RouteCalculator />
+        
+        <footer className="mt-10 text-center text-xs text-muted-foreground">
+          <p>© {new Date().getFullYear()} RouteCalc - Find your most economical route</p>
+        </footer>
       </div>
-    </div>
+    </ScrollArea>
   );
 };
 
