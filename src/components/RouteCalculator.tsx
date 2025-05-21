@@ -25,6 +25,11 @@ const RouteCalculator = () => {
     savings: number;
   } | null>(null);
 
+  // Effect to calculate results in real-time as values change
+  useEffect(() => {
+    calculateComparison();
+  }, [fuelEfficiency, fuelCost, tollRouteDistance, tollFreeRouteDistance, tollCost]);
+
   const calculateComparison = () => {
     // Input validation
     const fields = [
@@ -38,7 +43,9 @@ const RouteCalculator = () => {
     const emptyFields = fields.filter(field => !field.value || parseFloat(field.value) <= 0);
     
     if (emptyFields.length > 0) {
-      toast.error(`Please enter valid values for: ${emptyFields.map(f => f.name).join(", ")}`);
+      // Don't show toast errors during real-time calculation
+      // Only set comparison to null if validation fails
+      setComparison(null);
       return;
     }
     
@@ -52,11 +59,9 @@ const RouteCalculator = () => {
       );
       
       setComparison(result);
-      
-      toast.success("Route comparison calculated successfully!");
     } catch (error) {
       console.error("Calculation error:", error);
-      toast.error("Error calculating routes. Please check your inputs.");
+      setComparison(null);
     }
   };
 
@@ -123,13 +128,7 @@ const RouteCalculator = () => {
               rightAddon="AED"
             />
             
-            <Button 
-              onClick={calculateComparison} 
-              className="w-full mt-2"
-              size="lg"
-            >
-              Calculate Best Route
-            </Button>
+            {/* Remove the calculate button since we're doing real-time calculation */}
           </div>
         </CardContent>
       </Card>
