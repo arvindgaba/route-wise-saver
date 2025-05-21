@@ -4,10 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RouteInput from "./RouteInput";
-import { ArrowRight, Route, MapPin, DollarSign } from "lucide-react";
+import { ArrowRight, Route, MapPin, DollarSign, Save, RefreshCcw } from "lucide-react";
 import { compareRoutes } from "@/utils/routeCalculator";
 import RouteCard from "./RouteCard";
 import { toast } from "sonner";
+import { useRoutePreferences } from "@/hooks/useRoutePreferences";
 
 const RouteCalculator = () => {
   const [vehicleType, setVehicleType] = useState<"car" | "motorcycle">("car");
@@ -16,6 +17,7 @@ const RouteCalculator = () => {
   const [tollRouteDistance, setTollRouteDistance] = useState<string>("30");
   const [tollFreeRouteDistance, setTollFreeRouteDistance] = useState<string>("45");
   const [tollCost, setTollCost] = useState<string>("5.00");
+  const [loadingPreferences, setLoadingPreferences] = useState(true);
   
   const [comparison, setComparison] = useState<{
     tollRouteCost: number;
@@ -25,7 +27,28 @@ const RouteCalculator = () => {
     savings: number;
   } | null>(null);
 
-  // Effect to calculate results in real-time as values change
+  const { loadPreferences, savePreferences, isLoading, isSaving } = useRoutePreferences();
+
+  // Load saved preferences on initial render
+  useEffect(() => {
+    const fetchPreferences = async () => {
+      setLoadingPreferences(true);
+      const prefs = await loadPreferences();
+      if (prefs) {
+        setVehicleType(prefs.vehicle_type);
+        setFuelEfficiency(prefs.fuel_efficiency);
+        setFuelCost(prefs.fuel_cost);
+        setTollRouteDistance(prefs.toll_route_distance);
+        setTollFreeRouteDistance(prefs.toll_free_route_distance);
+        setTollCost(prefs.toll_cost);
+      }
+      setLoadingPreferences(false);
+    };
+
+    fetchPreferences();
+  }, []);
+
+  // Calculate results in real-time as values change
   useEffect(() => {
     calculateComparison();
   }, [fuelEfficiency, fuelCost, tollRouteDistance, tollFreeRouteDistance, tollCost]);
@@ -65,6 +88,31 @@ const RouteCalculator = () => {
     }
   };
 
+  const handleSavePreferences = async () => {
+    // Validate all fields before saving
+    if (
+      !fuelEfficiency || 
+      !fuelCost || 
+      !tollRouteDistance || 
+      !tollFreeRouteDistance || 
+      !tollCost
+    ) {
+      toast.error("Please fill in all fields before saving");
+      return;
+    }
+
+    const preferences = {
+      vehicle_type: vehicleType,
+      fuel_efficiency: fuelEfficiency,
+      fuel_cost: fuelCost,
+      toll_route_distance: tollRouteDistance,
+      toll_free_route_distance: tollFreeRouteDistance,
+      toll_cost: tollCost
+    };
+
+    await savePreferences(preferences);
+  };
+
   return (
     <div className="space-y-6 w-full max-w-md mx-auto">
       <Card className="shadow-md">
@@ -74,62 +122,78 @@ const RouteCalculator = () => {
         </CardHeader>
         
         <CardContent className="space-y-6">
-          <Tabs defaultValue="car" onValueChange={(value) => setVehicleType(value as "car" | "motorcycle")}>
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="car">Car</TabsTrigger>
-              <TabsTrigger value="motorcycle">Motorcycle</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <div className="flex justify-between items-center">
+            <Tabs defaultValue={vehicleType} onValueChange={(value) => setVehicleType(value as "car" | "motorcycle")}>
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="car">Car</TabsTrigger>
+                <TabsTrigger value="motorcycle">Motorcycle</TabsTrigger>
+              </TabsList>
+            </Tabs>
+            
+            <div className="flex space-x-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleSavePreferences}
+                disabled={isSaving}
+              >
+                <Save size={16} className="mr-1" />
+                {isSaving ? "Saving..." : "Save"}
+              </Button>
+            </div>
+          </div>
           
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+          {loadingPreferences ? (
+            <div className="py-4 text-center text-muted-foreground">Loading your preferences...</div>
+          ) : (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <RouteInput
+                  id="fuel-efficiency"
+                  label="Fuel Efficiency"
+                  value={fuelEfficiency}
+                  onChange={setFuelEfficiency}
+                  rightAddon="km/L"
+                />
+                
+                <RouteInput
+                  id="fuel-cost"
+                  label="Fuel Cost (Special 95)"
+                  value={fuelCost}
+                  onChange={setFuelCost}
+                  leftIcon={<DollarSign size={16} />}
+                  rightAddon="AED/L"
+                />
+              </div>
+              
               <RouteInput
-                id="fuel-efficiency"
-                label="Fuel Efficiency"
-                value={fuelEfficiency}
-                onChange={setFuelEfficiency}
-                rightAddon="km/L"
+                id="toll-route-distance"
+                label="Toll Route Distance"
+                value={tollRouteDistance}
+                onChange={setTollRouteDistance}
+                leftIcon={<Route size={16} />}
+                rightAddon="km"
               />
               
               <RouteInput
-                id="fuel-cost"
-                label="Fuel Cost (Special 95)"
-                value={fuelCost}
-                onChange={setFuelCost}
+                id="toll-free-route-distance"
+                label="Toll-Free Route Distance"
+                value={tollFreeRouteDistance}
+                onChange={setTollFreeRouteDistance}
+                leftIcon={<ArrowRight size={16} />}
+                rightAddon="km"
+              />
+              
+              <RouteInput
+                id="toll-cost"
+                label="Toll Cost (one way)"
+                value={tollCost}
+                onChange={setTollCost}
                 leftIcon={<DollarSign size={16} />}
-                rightAddon="AED/L"
+                rightAddon="AED"
               />
             </div>
-            
-            <RouteInput
-              id="toll-route-distance"
-              label="Toll Route Distance"
-              value={tollRouteDistance}
-              onChange={setTollRouteDistance}
-              leftIcon={<Route size={16} />}
-              rightAddon="km"
-            />
-            
-            <RouteInput
-              id="toll-free-route-distance"
-              label="Toll-Free Route Distance"
-              value={tollFreeRouteDistance}
-              onChange={setTollFreeRouteDistance}
-              leftIcon={<ArrowRight size={16} />}
-              rightAddon="km"
-            />
-            
-            <RouteInput
-              id="toll-cost"
-              label="Toll Cost (one way)"
-              value={tollCost}
-              onChange={setTollCost}
-              leftIcon={<DollarSign size={16} />}
-              rightAddon="AED"
-            />
-            
-            {/* Remove the calculate button since we're doing real-time calculation */}
-          </div>
+          )}
         </CardContent>
       </Card>
       

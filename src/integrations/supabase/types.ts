@@ -9,7 +9,45 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      route_preferences: {
+        Row: {
+          created_at: string
+          fuel_cost: number
+          fuel_efficiency: number
+          id: string
+          toll_cost: number
+          toll_free_route_distance: number
+          toll_route_distance: number
+          updated_at: string
+          user_id: string | null
+          vehicle_type: string
+        }
+        Insert: {
+          created_at?: string
+          fuel_cost?: number
+          fuel_efficiency?: number
+          id?: string
+          toll_cost?: number
+          toll_free_route_distance?: number
+          toll_route_distance?: number
+          updated_at?: string
+          user_id?: string | null
+          vehicle_type?: string
+        }
+        Update: {
+          created_at?: string
+          fuel_cost?: number
+          fuel_efficiency?: number
+          id?: string
+          toll_cost?: number
+          toll_free_route_distance?: number
+          toll_route_distance?: number
+          updated_at?: string
+          user_id?: string | null
+          vehicle_type?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

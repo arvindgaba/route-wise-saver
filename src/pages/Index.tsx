@@ -9,6 +9,7 @@ const Index = () => {
         <header className="mb-8 text-center">
           <h1 className="text-2xl md:text-3xl font-bold mb-2">Route Cost Calculator</h1>
           <p className="text-muted-foreground">Compare toll vs. toll-free routes to save money</p>
+          <p className="text-xs text-muted-foreground mt-1">Your preferences are automatically saved</p>
         </header>
         
         <RouteCalculator />
