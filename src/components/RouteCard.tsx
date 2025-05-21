@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, Route, MapPin, CurrencyDollarSign } from "lucide-react";
+import { ArrowLeft, ArrowRight, Route, MapPin, DollarSign } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface RouteCardProps {
@@ -68,7 +68,7 @@ const RouteCard = ({
         {isTollRoute && (
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-2">
-              <CurrencyDollarSign size={16} />
+              <DollarSign size={16} />
               <span>Toll Cost</span>
             </div>
             <span className="font-medium">${tollCost.toFixed(2)}</span>
@@ -77,7 +77,7 @@ const RouteCard = ({
         
         <div className="flex items-center justify-between text-base pt-2 border-t">
           <div className="flex items-center gap-2">
-            <CurrencyDollarSign size={18} />
+            <DollarSign size={18} />
             <span className="font-medium">Total Cost</span>
           </div>
           <span className="font-bold text-lg">${cost.toFixed(2)}</span>

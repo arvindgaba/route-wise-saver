@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RouteInput from "./RouteInput";
-import { ArrowRight, Route, MapPin, CurrencyDollarSign } from "lucide-react";
+import { ArrowRight, Route, MapPin, DollarSign } from "lucide-react";
 import { compareRoutes } from "@/utils/routeCalculator";
 import RouteCard from "./RouteCard";
 import { toast } from "sonner";
@@ -91,7 +91,7 @@ const RouteCalculator = () => {
                 label="Fuel Cost"
                 value={fuelCost}
                 onChange={setFuelCost}
-                leftIcon={<CurrencyDollarSign size={16} />}
+                leftIcon={<DollarSign size={16} />}
                 rightAddon="per L"
               />
             </div>
@@ -119,7 +119,7 @@ const RouteCalculator = () => {
               label="Toll Cost (one way)"
               value={tollCost}
               onChange={setTollCost}
-              leftIcon={<CurrencyDollarSign size={16} />}
+              leftIcon={<DollarSign size={16} />}
             />
             
             <Button 
