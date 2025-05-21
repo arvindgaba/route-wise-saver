@@ -11,8 +11,8 @@ import { toast } from "sonner";
 
 const RouteCalculator = () => {
   const [vehicleType, setVehicleType] = useState<"car" | "motorcycle">("car");
-  const [fuelEfficiency, setFuelEfficiency] = useState<string>("10");
-  const [fuelCost, setFuelCost] = useState<string>("1.50");
+  const [fuelEfficiency, setFuelEfficiency] = useState<string>("8.5");
+  const [fuelCost, setFuelCost] = useState<string>("2.91");
   const [tollRouteDistance, setTollRouteDistance] = useState<string>("30");
   const [tollFreeRouteDistance, setTollFreeRouteDistance] = useState<string>("45");
   const [tollCost, setTollCost] = useState<string>("5.00");
@@ -88,11 +88,11 @@ const RouteCalculator = () => {
               
               <RouteInput
                 id="fuel-cost"
-                label="Fuel Cost"
+                label="Fuel Cost (Special 95)"
                 value={fuelCost}
                 onChange={setFuelCost}
                 leftIcon={<DollarSign size={16} />}
-                rightAddon="per L"
+                rightAddon="AED/L"
               />
             </div>
             
@@ -120,6 +120,7 @@ const RouteCalculator = () => {
               value={tollCost}
               onChange={setTollCost}
               leftIcon={<DollarSign size={16} />}
+              rightAddon="AED"
             />
             
             <Button 
@@ -145,6 +146,7 @@ const RouteCalculator = () => {
               isRecommended={comparison.isTollRouteCheaper}
               isTollRoute={true}
               tollCost={parseFloat(tollCost)}
+              currency="AED"
             />
             
             <RouteCard
@@ -153,6 +155,7 @@ const RouteCalculator = () => {
               cost={comparison.tollFreeRouteCost}
               isRecommended={!comparison.isTollRouteCheaper}
               isTollRoute={false}
+              currency="AED"
             />
           </div>
           
@@ -160,7 +163,7 @@ const RouteCalculator = () => {
             <CardContent className="pt-6">
               <p className="text-center">
                 <span className="font-medium">You save </span>
-                <span className="font-bold text-lg">${comparison.savings.toFixed(2)}</span>
+                <span className="font-bold text-lg">AED {comparison.savings.toFixed(2)}</span>
                 <span className="font-medium"> by taking the </span>
                 <span className="font-bold">
                   {comparison.isTollRouteCheaper ? "toll route" : "toll-free route"}

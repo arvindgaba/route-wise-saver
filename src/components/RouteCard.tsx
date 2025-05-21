@@ -10,6 +10,7 @@ interface RouteCardProps {
   isRecommended?: boolean;
   isTollRoute?: boolean;
   tollCost?: number;
+  currency?: string;
   className?: string;
 }
 
@@ -20,6 +21,7 @@ const RouteCard = ({
   isRecommended = false,
   isTollRoute = false,
   tollCost = 0,
+  currency = "AED",
   className,
 }: RouteCardProps) => {
   const routeColor = isTollRoute ? "route-toll" : "route-free";
@@ -71,7 +73,7 @@ const RouteCard = ({
               <DollarSign size={16} />
               <span>Toll Cost</span>
             </div>
-            <span className="font-medium">${tollCost.toFixed(2)}</span>
+            <span className="font-medium">{currency} {tollCost.toFixed(2)}</span>
           </div>
         )}
         
@@ -80,7 +82,7 @@ const RouteCard = ({
             <DollarSign size={18} />
             <span className="font-medium">Total Cost</span>
           </div>
-          <span className="font-bold text-lg">${cost.toFixed(2)}</span>
+          <span className="font-bold text-lg">{currency} {cost.toFixed(2)}</span>
         </div>
       </CardContent>
     </Card>
