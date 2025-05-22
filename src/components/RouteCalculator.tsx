@@ -9,6 +9,8 @@ import { compareRoutes } from "@/utils/routeCalculator";
 import RouteCard from "./RouteCard";
 import { toast } from "sonner";
 import { useRoutePreferences } from "@/hooks/useRoutePreferences";
+import FuelTypeSelector from "./FuelTypeSelector";
+import CurrencySelector from "./CurrencySelector";
 
 const RouteCalculator = () => {
   const [vehicleType, setVehicleType] = useState<"car" | "motorcycle">("car");
@@ -17,6 +19,7 @@ const RouteCalculator = () => {
   const [tollRouteDistance, setTollRouteDistance] = useState<string>("30");
   const [tollFreeRouteDistance, setTollFreeRouteDistance] = useState<string>("45");
   const [tollCost, setTollCost] = useState<string>("5.00");
+  const [currency, setCurrency] = useState<string>("AED");
   const [loadingPreferences, setLoadingPreferences] = useState(true);
   
   const [comparison, setComparison] = useState<{
@@ -41,6 +44,9 @@ const RouteCalculator = () => {
         setTollRouteDistance(prefs.toll_route_distance);
         setTollFreeRouteDistance(prefs.toll_free_route_distance);
         setTollCost(prefs.toll_cost);
+        if (prefs.currency) {
+          setCurrency(prefs.currency);
+        }
       }
       setLoadingPreferences(false);
     };
@@ -107,7 +113,8 @@ const RouteCalculator = () => {
       fuel_cost: fuelCost,
       toll_route_distance: tollRouteDistance,
       toll_free_route_distance: tollFreeRouteDistance,
-      toll_cost: tollCost
+      toll_cost: tollCost,
+      currency: currency
     };
 
     await savePreferences(preferences);
@@ -122,6 +129,8 @@ const RouteCalculator = () => {
         </CardHeader>
         
         <CardContent className="space-y-6">
+          <CurrencySelector value={currency} onChange={setCurrency} />
+          
           <div className="flex justify-between items-center">
             <Tabs defaultValue={vehicleType} onValueChange={(value) => setVehicleType(value as "car" | "motorcycle")}>
               <TabsList className="grid w-full grid-cols-2">
@@ -156,14 +165,17 @@ const RouteCalculator = () => {
                   rightAddon="km/L"
                 />
                 
-                <RouteInput
-                  id="fuel-cost"
-                  label="Fuel Cost (Special 95)"
-                  value={fuelCost}
-                  onChange={setFuelCost}
-                  leftIcon={<DollarSign size={16} />}
-                  rightAddon="AED/L"
-                />
+                <div className="space-y-1">
+                  <RouteInput
+                    id="fuel-cost"
+                    label="Fuel Cost"
+                    value={fuelCost}
+                    onChange={setFuelCost}
+                    leftIcon={<DollarSign size={16} />}
+                    rightAddon={currency + "/L"}
+                  />
+                  <FuelTypeSelector value={fuelCost} onChange={setFuelCost} />
+                </div>
               </div>
               
               <RouteInput
@@ -190,7 +202,7 @@ const RouteCalculator = () => {
                 value={tollCost}
                 onChange={setTollCost}
                 leftIcon={<DollarSign size={16} />}
-                rightAddon="AED"
+                rightAddon={currency}
               />
             </div>
           )}
@@ -209,7 +221,7 @@ const RouteCalculator = () => {
               isRecommended={comparison.isTollRouteCheaper}
               isTollRoute={true}
               tollCost={parseFloat(tollCost)}
-              currency="AED"
+              currency={currency}
             />
             
             <RouteCard
@@ -218,7 +230,7 @@ const RouteCalculator = () => {
               cost={comparison.tollFreeRouteCost}
               isRecommended={!comparison.isTollRouteCheaper}
               isTollRoute={false}
-              currency="AED"
+              currency={currency}
             />
           </div>
           
@@ -226,7 +238,7 @@ const RouteCalculator = () => {
             <CardContent className="pt-6">
               <p className="text-center">
                 <span className="font-medium">You save </span>
-                <span className="font-bold text-lg">AED {comparison.savings.toFixed(2)}</span>
+                <span className="font-bold text-lg">{currency} {comparison.savings.toFixed(2)}</span>
                 <span className="font-medium"> by taking the </span>
                 <span className="font-bold">
                   {comparison.isTollRouteCheaper ? "toll route" : "toll-free route"}

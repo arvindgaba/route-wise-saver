@@ -11,6 +11,7 @@ export interface RoutePreference {
   toll_route_distance: string;
   toll_free_route_distance: string;
   toll_cost: string;
+  currency?: string;
 }
 
 export const useRoutePreferences = () => {
@@ -32,7 +33,20 @@ export const useRoutePreferences = () => {
         return null;
       }
 
-      return data.length > 0 ? data[0] as RoutePreference : null;
+      if (data.length > 0) {
+        // Convert numeric database values to strings for the UI
+        return {
+          id: data[0].id,
+          vehicle_type: data[0].vehicle_type as "car" | "motorcycle",
+          fuel_efficiency: data[0].fuel_efficiency.toString(),
+          fuel_cost: data[0].fuel_cost.toString(),
+          toll_route_distance: data[0].toll_route_distance.toString(),
+          toll_free_route_distance: data[0].toll_free_route_distance.toString(),
+          toll_cost: data[0].toll_cost.toString(),
+          currency: data[0].currency || "AED"
+        };
+      }
+      return null;
     } catch (error) {
       console.error("Failed to load preferences:", error);
       return null;
@@ -44,7 +58,18 @@ export const useRoutePreferences = () => {
   const savePreferences = async (preferences: RoutePreference): Promise<boolean> => {
     setIsSaving(true);
     try {
-      const { error } = await supabase.from("route_preferences").insert([preferences]);
+      // Convert string values to numeric for database storage
+      const dbPreferences = {
+        vehicle_type: preferences.vehicle_type,
+        fuel_efficiency: parseFloat(preferences.fuel_efficiency),
+        fuel_cost: parseFloat(preferences.fuel_cost),
+        toll_route_distance: parseFloat(preferences.toll_route_distance),
+        toll_free_route_distance: parseFloat(preferences.toll_free_route_distance),
+        toll_cost: parseFloat(preferences.toll_cost),
+        currency: preferences.currency || "AED"
+      };
+
+      const { error } = await supabase.from("route_preferences").insert([dbPreferences]);
 
       if (error) {
         console.error("Error saving preferences:", error);
