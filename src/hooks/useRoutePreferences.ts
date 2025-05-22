@@ -43,7 +43,7 @@ export const useRoutePreferences = () => {
           toll_route_distance: data[0].toll_route_distance.toString(),
           toll_free_route_distance: data[0].toll_free_route_distance.toString(),
           toll_cost: data[0].toll_cost.toString(),
-          currency: data[0].currency || "AED"
+          currency: data[0].currency || "AED" // Add proper handling for the currency field
         };
       }
       return null;
